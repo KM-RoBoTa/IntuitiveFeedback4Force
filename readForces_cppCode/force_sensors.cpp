@@ -19,8 +19,9 @@
 
 #include "force_sensors.hpp"
 
-#define BUFFER_SIZE	256
-#define BAUDRATE	230400
+#define BUFFER_SIZE		256
+#define BAUDRATE		230400
+#define TARE_SAMPLES	100 // Number of samples taken for the tare
 
 using namespace std;
 
@@ -32,6 +33,7 @@ using namespace std;
 ForceSensors::ForceSensors(const char* sensors_portname)
 {
 	m_forces = vector<ForceSensorStruct>(NBR_SENSORS);
+	m_tareOffsets = vector<ForceSensorStruct>(NBR_SENSORS);
 
     cout << "Creating the force sensors thread..." << endl;
     m_thread = thread(&ForceSensors::forceSensorsLoop, this, sensors_portname);
@@ -218,13 +220,65 @@ void ForceSensors::interpretData(char* read_buffer, int bytes_read)
  */
 float ForceSensors::getForces(vector<ForceSensorStruct>& forces)
 {
-	scoped_lock lock(m_mutex);
+	// Grab raw values
+	{
+		scoped_lock lock(m_mutex);
 
-	for (int i=0; i<forces.size(); i++) {
-		forces[i].Fx = m_forces[i].Fx;
-		forces[i].Fy = m_forces[i].Fy;
-		forces[i].Fz = m_forces[i].Fz;
+		for (int i=0; i<NBR_SENSORS; i++) {
+			forces[i].Fx = m_forces[i].Fx;
+			forces[i].Fy = m_forces[i].Fy;
+			forces[i].Fz = m_forces[i].Fz;
+		}
+	}
+
+	// Apply the calibration
+	for (int i=0; i<NBR_SENSORS; i++) {
+		forces[i].Fx -= m_tareOffsets[i].Fx;
+		forces[i].Fy -= m_tareOffsets[i].Fy;
+		forces[i].Fz -= m_tareOffsets[i].Fz;
 	}
 
 	return m_freq;
+}
+
+
+
+/**
+ * @brief	Calibrate the sensors
+ * @note	Make sure the sensors are not moving during the calibration!
+ */
+void ForceSensors::calibrate()
+{
+	cout << "Force sensors tare in progress..." << endl;
+
+	vector<ForceSensorStruct> forces(NBR_SENSORS);
+
+	for (int i=0; i<TARE_SAMPLES; i++) {
+		{
+			scoped_lock lock(m_mutex);
+			for (int j=0; j<NBR_SENSORS; j++)
+				forces[i] = m_forces[i];
+		}
+
+		for (int j=0; j<NBR_SENSORS; j++) {
+			// Update values
+			m_tareOffsets[j].Fx += forces[j].Fx; 
+			m_tareOffsets[j].Fy += forces[j].Fy; 
+			m_tareOffsets[j].Fz += forces[j].Fz;
+		}
+
+		usleep(30000);
+	}
+
+	for (int j=0; j<NBR_SENSORS; j++) {
+		m_tareOffsets[j].Fx = m_tareOffsets[j].Fx/(float)TARE_SAMPLES;
+		m_tareOffsets[j].Fy = m_tareOffsets[j].Fy/(float)TARE_SAMPLES;
+		m_tareOffsets[j].Fz = m_tareOffsets[j].Fz/(float)TARE_SAMPLES;
+
+		cout << "\nTare offsets for force sensor: " << j+1 << endl;
+		cout << "Fx: " << m_tareOffsets[j].Fx << " N" << endl;
+		cout << "Fy: " << m_tareOffsets[j].Fy << " N" << endl;
+		cout << "Fz: " << m_tareOffsets[j].Fz << " N" << endl;
+	}
+	cout << "Force sensors calibrated!" << endl;
 }

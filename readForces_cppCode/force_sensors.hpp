@@ -24,9 +24,9 @@
 
 
 struct ForceSensorStruct {
-    float Fx;
-    float Fy;
-    float Fz;
+    float Fx = 0;
+    float Fy = 0;
+    float Fz = 0;
 };
 
 
@@ -35,14 +35,17 @@ public:
     ForceSensors(const char* sensors_portname);
     ~ForceSensors();
     float getForces(std::vector<ForceSensorStruct>& forces);
+    void calibrate();
 
 private:
     bool m_stopThread = false;
 
+    float m_freq;
     std::thread m_thread;
     std::mutex m_mutex;
     std::vector<ForceSensorStruct> m_forces;
-    float m_freq;
+    std::vector<ForceSensorStruct> m_tareOffsets;
+
 
     void forceSensorsLoop(const char* sensors_portname);
     int openPort(const char* sensors_portname);

@@ -10,12 +10,14 @@ int main()
     ForceSensors forceSensors("/dev/ttyACM0");
     sleep(1);
 
-    vector<ForceSensorStruct> forces(4);
+    vector<ForceSensorStruct> forces(NBR_SENSORS);
+
+    forceSensors.calibrate();
 
     cout << "Starting sensor reading" << endl;
-
     int ctr = 0;
-    while(ctr < 1000) {
+    const int max = 3;
+    while(ctr < max) {
         float freq = forceSensors.getForces(forces);
 
         cout << "Sensor freq: " << freq << " Hz" << endl;
