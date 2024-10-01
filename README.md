@@ -1,5 +1,5 @@
-# Intuitive force sensors reading
-This repository contains all the necessary code to read the force sensors. <br /> 
+# IntuitiveFeedback force sensors reading
+This repository contains all the necessary code to read IntuitiveFeedback's force sensors. <br /> 
 You can find here:
 - the C++ code for the Linux OS that reads the data sent by the sensors, found in the ```readForces_cppCode``` folder
 - an example of how to use the code, found in the ```example``` folder
@@ -33,7 +33,7 @@ make sensors
 To run the code: ```./sensors``` from the build folder.
 
 ## About
-KM-RoBoTa sarl's code for reading Intuitive's force sensors.
+KM-RoBoTa sarl's code for reading IntuitiveFeedback's force sensors.
 
 ### Authors
 - Katarina Lichardova: katarina.lichardova@km-robota.com
