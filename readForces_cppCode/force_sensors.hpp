@@ -22,7 +22,9 @@
 
 #define NBR_SENSORS	4
 
-
+/**
+ * @brief   Container for a single force sensor
+ */
 struct ForceSensorStruct {
     float Fx = 0;
     float Fy = 0;
@@ -30,6 +32,9 @@ struct ForceSensorStruct {
 };
 
 
+/**
+ * @brief   Class handling all Intuitive force sensors (max 4)
+ */
 class ForceSensors {
 public:
     ForceSensors(const char* sensors_portname);
@@ -45,7 +50,6 @@ private:
     std::mutex m_mutex;
     std::vector<ForceSensorStruct> m_forces;
     std::vector<ForceSensorStruct> m_tareOffsets;
-
 
     void forceSensorsLoop(const char* sensors_portname);
     int openPort(const char* sensors_portname);

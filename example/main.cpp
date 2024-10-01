@@ -14,7 +14,7 @@ int main()
 
     forceSensors.calibrate();
 
-    cout << "Starting sensor reading" << endl;
+    cout << endl << "Starting sensor reading" << endl;
     int ctr = 0;
     const int max = 3;
     while(ctr < max) {
@@ -30,7 +30,7 @@ int main()
         cout << endl;
 
         ctr++;
-        usleep(1000);
+        usleep(10000);
 
     }
 
