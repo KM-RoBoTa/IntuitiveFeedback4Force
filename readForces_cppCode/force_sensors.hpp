@@ -20,11 +20,13 @@
 #include <thread>
 #include <vector>
 
+#define NBR_SENSORS	4
+
 
 struct ForceSensorStruct {
-    float x;
-    float y;
-    float z;
+    float Fx;
+    float Fy;
+    float Fz;
 };
 
 
@@ -32,7 +34,7 @@ class ForceSensors {
 public:
     ForceSensors(const char* sensors_portname);
     ~ForceSensors();
-    void getForces(std::vector<ForceSensorStruct>& forces);
+    float getForces(std::vector<ForceSensorStruct>& forces);
 
 private:
     bool m_stopThread = false;
@@ -40,6 +42,7 @@ private:
     std::thread m_thread;
     std::mutex m_mutex;
     std::vector<ForceSensorStruct> m_forces;
+    float m_freq;
 
     void forceSensorsLoop(const char* sensors_portname);
     int openPort(const char* sensors_portname);

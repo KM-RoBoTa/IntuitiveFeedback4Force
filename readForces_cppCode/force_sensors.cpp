@@ -19,7 +19,6 @@
 
 #include "force_sensors.hpp"
 
-#define NBR_SENSORS	4
 #define BUFFER_SIZE	256
 #define BAUDRATE	230400
 
@@ -174,9 +173,12 @@ void ForceSensors::interpretData(char* read_buffer, int bytes_read)
 	for (int i=0; i<bytes_read; i++) {
 		char c = read_buffer[i];
 
-		if (c != ',') 
+		if (c == 'd' || c == 't' || c == '=' ) {
+			nbr_digits = 0;
+			offset++;
+		}
+		else if (c != ',' && c != 'H') // The "H" from "Hz" is also a delimiter
 			nbr_digits++;
-
 		else {
 			value_c.clear();
 
@@ -198,26 +200,31 @@ void ForceSensors::interpretData(char* read_buffer, int bytes_read)
 
 	for (int i=0; i<values.size()/NBR_SENSORS+1; i++) {
 		ForceSensorStruct sensor;
-		sensor.x = values[i*3 + 0];
-		sensor.y = values[i*3 + 1];
-		sensor.z = values[i*3 + 2];
+		sensor.Fx = values[i*3 + 0];
+		sensor.Fy = values[i*3 + 1];
+		sensor.Fz = values[i*3 + 2];
 
 		m_forces[i] = sensor;
 	}
+
+	m_freq = values.back();
 }
 
 
 /**
  * @brief       Get the sensors values from the main thread (interface function)
  * @param[out]	forces Vector that will hold the output values
+ * @return		Sensor frequency refresh rate
  */
-void ForceSensors::getForces(vector<ForceSensorStruct>& forces)
+float ForceSensors::getForces(vector<ForceSensorStruct>& forces)
 {
 	scoped_lock lock(m_mutex);
 
 	for (int i=0; i<forces.size(); i++) {
-		forces[i].x = m_forces[i].x;
-		forces[i].y = m_forces[i].y;
-		forces[i].z = m_forces[i].z;
+		forces[i].Fx = m_forces[i].Fx;
+		forces[i].Fy = m_forces[i].Fy;
+		forces[i].Fz = m_forces[i].Fz;
 	}
+
+	return m_freq;
 }

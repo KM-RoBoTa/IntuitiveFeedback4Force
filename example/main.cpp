@@ -16,13 +16,14 @@ int main()
 
     int ctr = 0;
     while(ctr < 1000) {
-        forceSensors.getForces(forces);
+        float freq = forceSensors.getForces(forces);
 
+        cout << "Sensor freq: " << freq << " Hz" << endl;
         for (int i=0; i<forces.size(); i++) {
             cout << "Sensor " << i+1 << endl;
-            cout << "\tFx = " << forces[i].x << " N" << endl;
-            cout << "\tFy = " << forces[i].y << " N" << endl;
-            cout << "\tFz = " << forces[i].z << " N" << endl;
+            cout << "\tFx = " << forces[i].Fx << " N" << endl;
+            cout << "\tFy = " << forces[i].Fy << " N" << endl;
+            cout << "\tFz = " << forces[i].Fz << " N" << endl;
         }
         cout << endl;
 
