@@ -5,7 +5,7 @@ You can find here:
 - an example of how to use the code, found in the ```example``` folder
 
 ## Axes
-<insert picture here>
+todo: insert picture here
 
 ## C++ code to read the data
 The sensors are continuously read in a second thread, with an interface function allowing an easy grab of those values from the main thread. A calibration function is also included in the code. <br /> 
@@ -22,7 +22,7 @@ The force values are in ```N```.
 ## Example
 The example is very basic to showcase the use of the code: after calibrating, the main thread fetches and prints 3 times the force values from the second thread every 10ms. 
 
-To use the example, first plug in the IMU and check the assigned port. If the port is different than "/dev/ttyACM0", edit the main.cpp. <br /> 
+To use the example, first plug in the force sensors and check the assigned port. If the port is different than ```"/dev/ttyACM0"```, edit the ```main.cpp``` file. <br /> 
 To build the example: 
 ```bash
 cd <path-to-the-repo-folder>/example
